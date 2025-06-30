@@ -1,4 +1,5 @@
-let duration = 25 * 60; // 25 minutes
+// TIMER LOGIC
+let duration = 25 * 60;
 let timer = duration;
 let interval = null;
 
@@ -14,7 +15,7 @@ function updateDisplay() {
 }
 
 function startTimer() {
-  if (interval) return; // prevent multiple intervals
+  if (interval) return;
 
   interval = setInterval(() => {
     if (timer > 0) {
@@ -43,4 +44,65 @@ startBtn.addEventListener('click', startTimer);
 pauseBtn.addEventListener('click', pauseTimer);
 resetBtn.addEventListener('click', resetTimer);
 
-updateDisplay(); // initial display
+updateDisplay();
+
+// GOALS LOGIC
+const goalInput = document.getElementById('goalInput');
+const addGoalBtn = document.getElementById('addGoalBtn');
+const goalList = document.getElementById('goalList');
+
+let goals = JSON.parse(localStorage.getItem('goals')) || [];
+
+function saveGoals() {
+  localStorage.setItem('goals', JSON.stringify(goals));
+}
+
+function renderGoals() {
+  goalList.innerHTML = '';
+  goals.forEach((goal, index) => {
+    const li = document.createElement('li');
+    li.className = 'list-group-item d-flex justify-content-between align-items-center';
+    li.innerHTML = `
+      <span class="${goal.done ? 'text-decoration-line-through text-muted' : ''}">
+        ${goal.text}
+      </span>
+      <div>
+        <button class="btn btn-sm btn-success me-1" onclick="markDone(${index})">
+          ${goal.done ? '✅' : '✔'}
+        </button>
+        <button class="btn btn-sm btn-danger" onclick="deleteGoal(${index})">🗑</button>
+      </div>
+    `;
+    goalList.appendChild(li);
+  });
+}
+
+function addGoal() {
+  const text = goalInput.value.trim();
+  if (text !== '') {
+    goals.push({ text, done: false });
+    saveGoals();
+    renderGoals();
+    goalInput.value = '';
+  }
+}
+
+function markDone(index) {
+  goals[index].done = !goals[index].done;
+  saveGoals();
+  renderGoals();
+}
+
+function deleteGoal(index) {
+  goals.splice(index, 1);
+  saveGoals();
+  renderGoals();
+}
+
+addGoalBtn.addEventListener('click', addGoal);
+goalInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') addGoal();
+});
+
+// Initial render
+renderGoals();
