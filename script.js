@@ -7,6 +7,8 @@ const timerDisplay = document.getElementById('timer');
 const startBtn = document.getElementById('startBtn');
 const pauseBtn = document.getElementById('pauseBtn');
 const resetBtn = document.getElementById('resetBtn');
+const customMinutes = document.getElementById('customMinutes');
+const setTimerBtn = document.getElementById('setTimerBtn');
 
 function updateDisplay() {
   const minutes = Math.floor(timer / 60).toString().padStart(2, '0');
@@ -40,11 +42,39 @@ function resetTimer() {
   updateDisplay();
 }
 
+function setCustomTimer() {
+  const mins = parseInt(customMinutes.value);
+  if (!isNaN(mins) && mins > 0) {
+    duration = mins * 60;
+    timer = duration;
+    updateDisplay();
+  } else {
+    alert("Please enter a valid number of minutes.");
+  }
+}
+
 startBtn.addEventListener('click', startTimer);
 pauseBtn.addEventListener('click', pauseTimer);
 resetBtn.addEventListener('click', resetTimer);
+setTimerBtn.addEventListener('click', setCustomTimer);
 
 updateDisplay();
+
+// THEME TOGGLE
+const body = document.getElementById('body');
+const themeToggle = document.getElementById('themeToggle');
+let darkMode = false;
+
+themeToggle.addEventListener('click', () => {
+  darkMode = !darkMode;
+  if (darkMode) {
+    body.classList.remove('bg-light');
+    body.classList.add('bg-dark', 'text-light');
+  } else {
+    body.classList.remove('bg-dark', 'text-light');
+    body.classList.add('bg-light');
+  }
+});
 
 // GOALS LOGIC
 const goalInput = document.getElementById('goalInput');
