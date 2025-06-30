@@ -50,6 +50,8 @@ updateDisplay();
 const goalInput = document.getElementById('goalInput');
 const addGoalBtn = document.getElementById('addGoalBtn');
 const goalList = document.getElementById('goalList');
+const progressSummary = document.getElementById('progressSummary');
+const clearAllBtn = document.getElementById('clearAllBtn');
 
 let goals = JSON.parse(localStorage.getItem('goals')) || [];
 
@@ -75,6 +77,13 @@ function renderGoals() {
     `;
     goalList.appendChild(li);
   });
+  updateProgress();
+}
+
+function updateProgress() {
+  const doneCount = goals.filter(g => g.done).length;
+  const total = goals.length;
+  progressSummary.textContent = `Completed ${doneCount} / ${total} goals`;
 }
 
 function addGoal() {
@@ -99,10 +108,18 @@ function deleteGoal(index) {
   renderGoals();
 }
 
+function clearAllGoals() {
+  if (confirm("Are you sure you want to clear all goals?")) {
+    goals = [];
+    saveGoals();
+    renderGoals();
+  }
+}
+
 addGoalBtn.addEventListener('click', addGoal);
 goalInput.addEventListener('keypress', (e) => {
   if (e.key === 'Enter') addGoal();
 });
+clearAllBtn.addEventListener('click', clearAllGoals);
 
-// Initial render
 renderGoals();
