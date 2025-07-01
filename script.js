@@ -11,6 +11,7 @@ const resetBtn = document.getElementById('resetBtn');
 const customMinutes = document.getElementById('customMinutes');
 const setTimerBtn = document.getElementById('setTimerBtn');
 const alarmSound = document.getElementById('alarmSound');
+
 const quotes = [
   "Small daily improvements are the key to staggering long-term results.",
   "Your daily choices and actions should support your goals.",
@@ -29,8 +30,9 @@ function displayRandomQuote() {
   quoteEl.textContent = quotes[randomIndex];
 }
 
-document.getElementById('refreshQuote').addEventListener('click', displayRandomQuote);
+displayRandomQuote();
 
+document.getElementById('refreshQuote').addEventListener('click', displayRandomQuote);
 
 function updateDisplay() {
   const minutes = Math.floor(timer / 60).toString().padStart(2, '0');
