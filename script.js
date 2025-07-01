@@ -11,6 +11,26 @@ const resetBtn = document.getElementById('resetBtn');
 const customMinutes = document.getElementById('customMinutes');
 const setTimerBtn = document.getElementById('setTimerBtn');
 const alarmSound = document.getElementById('alarmSound');
+const quotes = [
+  "Small daily improvements are the key to staggering long-term results.",
+  "Your daily choices and actions should support your goals.",
+  "Focus on being productive instead of busy.",
+  "The secret of getting ahead is getting started.",
+  "Don’t count the days, make the days count.",
+  "A goal without a plan is just a wish.",
+  "Discipline is choosing between what you want now and what you want most.",
+  "Success is the sum of small efforts, repeated day in and day out."
+];
+
+const quoteEl = document.getElementById('quote');
+
+function displayRandomQuote() {
+  const randomIndex = Math.floor(Math.random() * quotes.length);
+  quoteEl.textContent = quotes[randomIndex];
+}
+
+document.getElementById('refreshQuote').addEventListener('click', displayRandomQuote);
+
 
 function updateDisplay() {
   const minutes = Math.floor(timer / 60).toString().padStart(2, '0');
@@ -192,4 +212,6 @@ goalInput.addEventListener('keypress', (e) => {
 clearAllBtn.addEventListener('click', clearAllGoals);
 exportGoalsBtn.addEventListener('click', exportGoals);
 
+
 renderGoals();
+displayRandomQuote();
