@@ -29,14 +29,19 @@ function startTimer() {
     if (timer > 0) {
       timer--;
       updateDisplay();
+
+      if (timer === 5) {
+        alarmSound.play().catch(err => console.log("Audio play blocked:", err));
+      }
+
     } else {
       clearInterval(interval);
       interval = null;
-      alarmSound.play();
       alert("Time's up!");
     }
   }, 1000);
 }
+
 
 function pauseTimer() {
   clearInterval(interval);
