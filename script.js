@@ -42,7 +42,6 @@ function startTimer() {
   }, 1000);
 }
 
-
 function pauseTimer() {
   clearInterval(interval);
   interval = null;
@@ -72,13 +71,12 @@ setTimerBtn.addEventListener('click', setCustomTimer);
 
 updateDisplay();
 
-// THEME TOGGLE
+// THEME TOGGLE + PERSISTENCE
 const body = document.getElementById('body');
 const themeToggle = document.getElementById('themeToggle');
-let darkMode = false;
+let darkMode = localStorage.getItem('darkMode') === 'true';
 
-themeToggle.addEventListener('click', () => {
-  darkMode = !darkMode;
+function applyTheme() {
   if (darkMode) {
     body.classList.remove('bg-light');
     body.classList.add('bg-dark', 'text-light');
@@ -86,6 +84,13 @@ themeToggle.addEventListener('click', () => {
     body.classList.remove('bg-dark', 'text-light');
     body.classList.add('bg-light');
   }
+  localStorage.setItem('darkMode', darkMode);
+}
+applyTheme();
+
+themeToggle.addEventListener('click', () => {
+  darkMode = !darkMode;
+  applyTheme();
 });
 
 // GOALS LOGIC
@@ -94,6 +99,7 @@ const addGoalBtn = document.getElementById('addGoalBtn');
 const goalList = document.getElementById('goalList');
 const progressSummary = document.getElementById('progressSummary');
 const clearAllBtn = document.getElementById('clearAllBtn');
+const exportGoalsBtn = document.getElementById('exportGoals');
 
 let goals = JSON.parse(localStorage.getItem('goals')) || [];
 
@@ -158,10 +164,32 @@ function clearAllGoals() {
   }
 }
 
+function exportGoals() {
+  if (goals.length === 0) {
+    alert("No goals to export.");
+    return;
+  }
+  let csv = "Goal,Status\n";
+  goals.forEach(g => {
+    csv += `"${g.text}","${g.done ? 'Done' : 'Pending'}"\n`;
+  });
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'daily_goals.csv';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
 addGoalBtn.addEventListener('click', addGoal);
 goalInput.addEventListener('keypress', (e) => {
   if (e.key === 'Enter') addGoal();
 });
 clearAllBtn.addEventListener('click', clearAllGoals);
+exportGoalsBtn.addEventListener('click', exportGoals);
 
 renderGoals();
