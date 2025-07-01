@@ -4,16 +4,22 @@ let timer = duration;
 let interval = null;
 
 const timerDisplay = document.getElementById('timer');
+const timerProgress = document.getElementById('timerProgress');
 const startBtn = document.getElementById('startBtn');
 const pauseBtn = document.getElementById('pauseBtn');
 const resetBtn = document.getElementById('resetBtn');
 const customMinutes = document.getElementById('customMinutes');
 const setTimerBtn = document.getElementById('setTimerBtn');
+const alarmSound = document.getElementById('alarmSound');
 
 function updateDisplay() {
   const minutes = Math.floor(timer / 60).toString().padStart(2, '0');
   const seconds = (timer % 60).toString().padStart(2, '0');
   timerDisplay.textContent = `${minutes}:${seconds}`;
+
+  const percent = (timer / duration) * 100;
+  timerProgress.style.width = `${percent}%`;
+  timerProgress.setAttribute('aria-valuenow', percent.toFixed(0));
 }
 
 function startTimer() {
@@ -26,6 +32,7 @@ function startTimer() {
     } else {
       clearInterval(interval);
       interval = null;
+      alarmSound.play();
       alert("Time's up!");
     }
   }, 1000);
