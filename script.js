@@ -2,6 +2,7 @@
 let duration = 25 * 60;
 let timer = duration;
 let interval = null;
+const STORAGE_KEY = 'focusTimerState';
 
 const timerDisplay = document.getElementById('timer');
 const timerProgress = document.getElementById('timerProgress');
@@ -12,6 +13,7 @@ const customMinutes = document.getElementById('customMinutes');
 const setTimerBtn = document.getElementById('setTimerBtn');
 const alarmSound = document.getElementById('alarmSound');
 
+// QUOTES LOGIC
 const quotes = [
   "Small daily improvements are the key to staggering long-term results.",
   "Your daily choices and actions should support your goals.",
@@ -24,16 +26,14 @@ const quotes = [
 ];
 
 const quoteEl = document.getElementById('quote');
-
 function displayRandomQuote() {
   const randomIndex = Math.floor(Math.random() * quotes.length);
   quoteEl.textContent = quotes[randomIndex];
 }
-
 displayRandomQuote();
-
 document.getElementById('refreshQuote').addEventListener('click', displayRandomQuote);
 
+// Update timer UI
 function updateDisplay() {
   const minutes = Math.floor(timer / 60).toString().padStart(2, '0');
   const seconds = (timer % 60).toString().padStart(2, '0');
@@ -44,6 +44,29 @@ function updateDisplay() {
   timerProgress.setAttribute('aria-valuenow', percent.toFixed(0));
 }
 
+// Save timer state to localStorage
+function saveTimerState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({
+    timer,
+    duration,
+    isRunning: !!interval
+  }));
+}
+
+// Load and restore timer state
+function loadTimerState() {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) {
+    const state = JSON.parse(saved);
+    timer = state.timer;
+    duration = state.duration;
+    updateDisplay();
+    if (state.isRunning) {
+      startTimer();
+    }
+  }
+}
+
 function startTimer() {
   if (interval) return;
 
@@ -51,14 +74,15 @@ function startTimer() {
     if (timer > 0) {
       timer--;
       updateDisplay();
+      saveTimerState();
 
       if (timer === 5) {
         alarmSound.play().catch(err => console.log("Audio play blocked:", err));
       }
-
     } else {
       clearInterval(interval);
       interval = null;
+      localStorage.removeItem(STORAGE_KEY);
       alert("Time's up!");
     }
   }, 1000);
@@ -67,12 +91,14 @@ function startTimer() {
 function pauseTimer() {
   clearInterval(interval);
   interval = null;
+  saveTimerState();
 }
 
 function resetTimer() {
   pauseTimer();
   timer = duration;
   updateDisplay();
+  saveTimerState();
 }
 
 function setCustomTimer() {
@@ -81,6 +107,7 @@ function setCustomTimer() {
     duration = mins * 60;
     timer = duration;
     updateDisplay();
+    saveTimerState();
   } else {
     alert("Please enter a valid number of minutes.");
   }
@@ -92,6 +119,7 @@ resetBtn.addEventListener('click', resetTimer);
 setTimerBtn.addEventListener('click', setCustomTimer);
 
 updateDisplay();
+loadTimerState();
 
 // THEME TOGGLE + PERSISTENCE
 const body = document.getElementById('body');
@@ -214,6 +242,4 @@ goalInput.addEventListener('keypress', (e) => {
 clearAllBtn.addEventListener('click', clearAllGoals);
 exportGoalsBtn.addEventListener('click', exportGoals);
 
-
 renderGoals();
-displayRandomQuote();
